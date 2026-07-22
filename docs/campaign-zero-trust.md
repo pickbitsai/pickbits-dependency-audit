@@ -14,7 +14,7 @@ This is advertising copy, not bundled adware. The product should never install m
 
 > CyberHawk is an open-source vulnerability watchdog that inventories local projects, checks packages against live disclosures, verifies what it can, quarantines what it cannot, and turns remediation into a human-approved workflow.
 
-**Primary CTA:** Run a local audit  
+**Primary CTA:** Run a local audit<br>
 **Secondary CTA:** Inspect the source
 
 **Trust strip:** Open source / local dashboard / report-only by default / no source upload
@@ -107,22 +107,22 @@ Trust nothing. Verify everything. Trap unauthorized automation.
 
 ## 30-second demo script
 
-**0-5 seconds:** Pan across a folder containing many projects.  
+**0-5 seconds:** Pan across a folder containing many projects.<br>
 “Most of our code does not live in one perfect repository.”
 
-**5-11 seconds:** Start the local scan and open the dashboard.  
+**5-11 seconds:** Start the local scan and open the dashboard.<br>
 “CyberHawk turns a folder into a persistent vulnerability-response queue.”
 
-**11-18 seconds:** Show `ALLOW_LOCKED`, `REVIEW`, and `QUARANTINE`.  
+**11-18 seconds:** Show `ALLOW_LOCKED`, `REVIEW`, and `QUARANTINE`.<br>
 “It separates what the lockfile proves from what still needs trust evidence.”
 
-**18-24 seconds:** Open a typed remediation request.  
+**18-24 seconds:** Open a typed remediation request.<br>
 “Recommendations cross a narrow data boundary. The human still owns the change.”
 
-**24-27 seconds:** Trigger the controlled canary; show the critical banner.  
+**24-27 seconds:** Trigger the controlled canary; show the critical banner.<br>
 “And if automation touches a boundary marker, CyberHawk records it.”
 
-**27-30 seconds:** Logo and CTA.  
+**27-30 seconds:** Logo and CTA.<br>
 “Trust nothing. Verify everything. Run CyberHawk locally.”
 
 ## Screenshot captions for pickbits.ai/cyberhawk

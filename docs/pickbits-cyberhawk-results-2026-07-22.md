@@ -1,7 +1,7 @@
 # We Pointed CyberHawk at a Real Windows Development Folder
 
-**Test date:** July 22, 2026  
-**Target:** a local Windows development portfolio under `C:\new`  
+**Test date:** July 22, 2026<br>
+**Target:** a local Windows development portfolio under `C:\new`<br>
 **Mode:** read-only OSV import, lockfile admission audit, persistent local dashboard
 
 We did not build a hand-picked demo repository. We pointed CyberHawk at an active development folder and asked three separate questions:

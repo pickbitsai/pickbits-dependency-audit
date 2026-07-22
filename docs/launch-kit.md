@@ -28,7 +28,7 @@ CyberHawk is not another vulnerability database and does not depend on a PickBit
 
 **Subhead:** Point CyberHawk at one project or a folder full of them. It finds vulnerable dependency versions, shows what the lockfile can prove, quarantines active package content, and produces a local dashboard with reviewable actions.
 
-**Primary CTA:** View the open-source project  
+**Primary CTA:** View the open-source project<br>
 **Secondary CTA:** Watch the 30-second demo
 
 **Trust line:** MIT licensed · report-only by default · no PickBits feed required · no source-code upload
