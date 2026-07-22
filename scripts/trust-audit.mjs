@@ -151,7 +151,7 @@ for (const required of ["scan", "target", "db", "output"]) {
 const scanPath = path.resolve(args.scan);
 const target = path.resolve(args.target);
 const outputPath = path.resolve(args.output);
-const policyPath = path.resolve(args.policy || "cyberhawk-policy.json");
+const policyPath = path.resolve(args.policy || "dependency-audit-policy.json");
 const complete = args.complete !== "false";
 const scan = JSON.parse(fs.readFileSync(scanPath, "utf8"));
 const policy = JSON.parse(fs.readFileSync(policyPath, "utf8"));

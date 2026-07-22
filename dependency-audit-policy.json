@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "policyName": "CyberHawk zero-trust baseline",
+  "policyName": "PickBits Dependency Audit zero-trust baseline",
   "approvedRegistryHosts": [
     "registry.npmjs.org"
   ],

@@ -2,7 +2,7 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 
-const reportPath = path.resolve(process.argv[2] || "reports/cyberhawk-c-new-2026-07-22.html");
+const reportPath = path.resolve(process.argv[2] || "reports/dependency-audit-report.html");
 const port = Number(process.argv[3] || 8765);
 
 if (!fs.existsSync(reportPath) || !fs.statSync(reportPath).isFile()) {
@@ -26,5 +26,5 @@ const server = http.createServer((request, response) => {
 });
 
 server.listen(port, "127.0.0.1", () => {
-  console.log(`CyberHawk report: http://127.0.0.1:${port}/`);
+  console.log(`PickBits Dependency Audit report: http://127.0.0.1:${port}/`);
 });

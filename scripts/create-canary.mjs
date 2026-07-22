@@ -36,7 +36,7 @@ db.close();
 
 const canary = {
   schemaVersion: 1,
-  type: "cyberhawk-defensive-canary",
+  type: "pickbits-dependency-audit-canary",
   decoy: true,
   name: args.name,
   marker,

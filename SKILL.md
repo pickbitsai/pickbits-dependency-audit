@@ -1,13 +1,13 @@
 ---
-name: cyberhawk
-description: Scan a project's dependency manifests and lockfiles for known vulnerabilities with OSV-Scanner, persist evidence locally, evaluate package trust signals, create an HTML report, and propose constrained version bumps for human approval. Use when the user asks to run CyberHawk, scan dependencies, check a repository for CVEs, or create a dependency vulnerability report.
+name: pickbits-dependency-audit
+description: Scan a project's dependency manifests and lockfiles for known vulnerabilities with OSV-Scanner, persist evidence locally, evaluate package trust signals, create an HTML report, and propose constrained version bumps for human approval. Use when the user asks to run PickBits Dependency Audit, scan dependencies, check a repository for CVEs, or create a dependency vulnerability report.
 ---
 
-You are running CyberHawk on the user's current project.
+You are running PickBits Dependency Audit on the user's current project.
 
 ## Goal
 
-Identify known dependency vulnerabilities, explain coverage gaps, provide structured fixed-version guidance, persist the result when the local CyberHawk scripts are available, and create a local report. OSV is the default vulnerability source. Do not fetch or require a PickBits feed.
+Identify known dependency vulnerabilities, explain coverage gaps, provide structured fixed-version guidance, persist the result when the local audit scripts are available, and create a local report. OSV is the default vulnerability source. Do not fetch or require a PickBits feed.
 
 This is dependency vulnerability scanning. Never describe it as antivirus, malware detection, source-code security analysis, reachability analysis, or proof that an application is secure.
 
@@ -54,7 +54,7 @@ Build the inventory and findings exclusively from the structured scanner respons
 
 ### 2. Persist and classify evidence
 
-When `scripts/trust-audit.mjs` is present, import the result into a local CyberHawk database:
+When `scripts/trust-audit.mjs` is present, import the result into a local PickBits Dependency Audit database:
 
 ```text
 node scripts/trust-audit.mjs --scan <osv-json> --target <target> --db <state-db> --output <run-json>
@@ -73,7 +73,7 @@ Never relabel `publisher provenance: unknown` as trusted.
 
 When the user supplies a local watchlist, regex-extract `CVE-\d{4}-\d{4,7}` identifiers and highlight intersections with the structured OSV result.
 
-When the user explicitly supplies an unlisted personal CyberHawk RSS URL, use the bundled importer first:
+When the user explicitly supplies an unlisted personal CyberHawk RSS URL, use the bundled importer first. CyberHawk is the name of the PickBits editorial feed, not this audit package:
 
 ```text
 node scripts/import-watchlist.mjs --url <personal-feed-url> --output <local-watchlist.txt>
@@ -116,7 +116,7 @@ Give the user the exact absolute report path.
 Use this shape:
 
 ```text
-CyberHawk
+PickBits Dependency Audit
 
 Scan status: complete | incomplete
 Dependency inputs: <N>
@@ -147,7 +147,7 @@ Patching is allowed only when all of these conditions hold:
 
 Then:
 
-1. Create a `cyberhawk/<YYYY-MM-DD>` branch.
+1. Create a `dependency-audit/<YYYY-MM-DD>` branch.
 2. Apply only approved dependency manifest and lockfile changes.
 3. Disable lifecycle scripts during lockfile regeneration where supported.
 4. Run the project's existing relevant tests if they do not require new authority.

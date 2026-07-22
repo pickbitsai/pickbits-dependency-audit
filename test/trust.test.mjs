@@ -51,7 +51,7 @@ test("typed remediation requests reject unsafe package-controlled fields", () =>
 });
 
 test("complete rescans require two absences before closing a detection", () => {
-  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "cyberhawk-test-"));
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "pickbits-audit-test-"));
   const target = path.join(temporary, "repo");
   fs.mkdirSync(target);
   fs.writeFileSync(path.join(target, "package-lock.json"), JSON.stringify({ lockfileVersion: 3, packages: { "": {}, "node_modules/demo": { version: "1.0.0", resolved: "https://registry.npmjs.org/demo/-/demo-1.0.0.tgz", integrity: "sha512-example" } } }));
@@ -61,7 +61,7 @@ test("complete rescans require two absences before closing a detection", () => {
   const scanPath = path.join(temporary, "scan.json");
   const dbPath = path.join(temporary, "state.db");
   const outputPath = path.join(temporary, "result.json");
-  const policyPath = path.resolve("cyberhawk-policy.json");
+  const policyPath = path.resolve("dependency-audit-policy.json");
   const scriptPath = path.resolve("scripts/trust-audit.mjs");
   const run = (scan) => {
     fs.writeFileSync(scanPath, JSON.stringify(scan));

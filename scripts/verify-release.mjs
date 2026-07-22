@@ -25,7 +25,7 @@ const filePath = path.resolve(args.file);
 const bytes = fs.readFileSync(filePath);
 const sha256 = crypto.createHash("sha256").update(bytes).digest("hex");
 const apiUrl = `https://api.github.com/repos/${args.repository}/releases/tags/${encodeURIComponent(args.tag)}`;
-  const response = await fetch(apiUrl, { headers: { accept: "application/vnd.github+json", "user-agent": "CyberHawk/0.4" } });
+  const response = await fetch(apiUrl, { headers: { accept: "application/vnd.github+json", "user-agent": "PickBits-Dependency-Audit/0.5" } });
 if (!response.ok) throw new Error(`Release metadata request failed: ${response.status}`);
 const release = await response.json();
 const asset = (release.assets || []).find((item) => item.name === args.asset);

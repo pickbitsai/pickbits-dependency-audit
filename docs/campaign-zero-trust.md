@@ -1,4 +1,4 @@
-# CyberHawk Zero Trust - Campaign Creative
+# PickBits Dependency Audit — Campaign Creative
 
 This is advertising copy, not bundled adware. The product should never install marketing software, collect telemetry by default, or interrupt users with promotions.
 
@@ -12,7 +12,7 @@ This is advertising copy, not bundled adware. The product should never install m
 
 **Subhead:**
 
-> CyberHawk is an open-source vulnerability watchdog that inventories local projects, checks packages against live disclosures, verifies what it can, quarantines what it cannot, and turns remediation into a human-approved workflow.
+> PickBits Dependency Audit is an open-source local workflow that inventories dependency files, checks installed versions against OSV, records what the evidence can prove, and turns remediation into a human-approved workflow.
 
 **Primary CTA:** Run a local audit<br>
 **Secondary CTA:** Inspect the source
@@ -23,15 +23,15 @@ This is advertising copy, not bundled adware. The product should never install m
 
 ### 25 words
 
-CyberHawk is a local, open-source dependency watchdog that persists vulnerability findings, evaluates package evidence, and proposes constrained fixes for human approval.
+PickBits Dependency Audit is a local, open-source dependency audit that persists vulnerability findings, evaluates package evidence, and proposes constrained fixes for human approval.
 
 ### 50 words
 
-Point CyberHawk at a development folder. It imports OSV findings, evaluates npm lockfiles under an explicit zero-trust policy, preserves remediation state across scans, and generates a private local dashboard. Packages with active scripts or incomplete evidence are quarantined or sent to review—not silently trusted.
+Point PickBits Dependency Audit at a development folder. It imports OSV findings, evaluates npm lockfiles under an explicit zero-trust policy, preserves remediation state across scans, and generates a private local dashboard. Packages with active scripts or incomplete evidence are quarantined or sent to review—not silently trusted.
 
 ### One-line profile description
 
-CyberHawk: an open-source vulnerability-response workflow that cross-references project dependencies with live disclosures, verifies artifact evidence, and proposes constrained patches with human approval.
+PickBits Dependency Audit: an open-source vulnerability-response workflow that cross-references project dependencies with OSV disclosures, verifies artifact evidence, and proposes constrained patches with human approval.
 
 ## LinkedIn launch post
 
@@ -39,7 +39,7 @@ Your dependency scanner can tell you a package has a CVE.
 
 It usually cannot tell you whether the artifact should be trusted, whether advisory text tried to steer an AI agent, whether an automated fix crossed a boundary, or whether the finding stayed fixed two scans later.
 
-That is the gap we are building CyberHawk to close.
+That is the gap PickBits Dependency Audit is designed to close.
 
 We ran the open-source prototype across a real Windows development portfolio:
 
@@ -52,7 +52,7 @@ We ran the open-source prototype across a real Windows development portfolio:
 
 We also verified the local scanner against its official release digest and tripped a harmless localhost canary to prove the alert path. The hit returned a `404` to the caller and appeared as a critical event in the local dashboard.
 
-CyberHawk is report-only today. It proposes typed, human-approved remediation requests; it does not silently run package scripts or push changes. Next comes a sandboxed executor that must earn the right to make each change.
+PickBits Dependency Audit is report-only today. It proposes typed, human-approved remediation requests; it does not silently run package scripts or push changes. Next comes a sandboxed executor that must earn the right to make each change.
 
 The engine, policy, dashboard, and tests are being built in the open.
 
@@ -66,7 +66,7 @@ Trust nothing. Verify everything. Trap unauthorized automation.
 
 **Headline:** Your scanner found a CVE. Now what?
 
-**Body:** CyberHawk turns local dependency findings into persistent, reviewable action—without turning advisory prose into shell commands. Open source. Report-only by default.
+**Body:** PickBits Dependency Audit turns local dependency findings into persistent, reviewable action—without turning advisory prose into shell commands. Open source. Report-only by default.
 
 **CTA:** See the local test
 
@@ -74,7 +74,7 @@ Trust nothing. Verify everything. Trap unauthorized automation.
 
 **Headline:** A checksum is evidence. It is not trust.
 
-**Body:** CyberHawk admits exact locked artifacts, quarantines lifecycle scripts, records unknown publisher provenance, and keeps the human in control of every proposed fix.
+**Body:** PickBits Dependency Audit admits exact locked artifacts, quarantines lifecycle scripts, records unknown publisher provenance, and keeps the human in control of every proposed fix.
 
 **CTA:** Inspect the policy
 
@@ -82,7 +82,7 @@ Trust nothing. Verify everything. Trap unauthorized automation.
 
 **Headline:** What if your security data talks back to your agent?
 
-**Body:** Treat package metadata and advisory text as hostile input. CyberHawk detects steering patterns, emits typed remediation requests, and supports harmless canaries that reveal unexpected automation.
+**Body:** Treat package metadata and advisory text as hostile input. PickBits Dependency Audit detects steering patterns, emits typed remediation requests, and supports harmless canaries that reveal unexpected automation.
 
 **CTA:** Watch the canary demo
 
@@ -98,12 +98,12 @@ Trust nothing. Verify everything. Trap unauthorized automation.
 
 | Headline | Supporting line |
 |---|---|
-| Your lockfile is evidence. | CyberHawk reads it like an investigator. |
+| Your lockfile is evidence. | PickBits Dependency Audit reads it like an investigator. |
 | CVEs change. Your dashboard should too. | Persistent local vulnerability response. |
 | Do not let an advisory become a command. | Typed requests. Human approval. |
 | `npm install` is not a remediation strategy. | Verify, quarantine, review, then act. |
 | The package is pinned. The publisher is still unknown. | Zero trust for the dependency chain. |
-| A clean scan is an observation, not absolution. | CyberHawk requires repeated evidence to close. |
+| A clean scan is an observation, not absolution. | PickBits Dependency Audit requires repeated evidence to close. |
 
 ## 30-second demo script
 
@@ -111,7 +111,7 @@ Trust nothing. Verify everything. Trap unauthorized automation.
 “Most of our code does not live in one perfect repository.”
 
 **5-11 seconds:** Start the local scan and open the dashboard.<br>
-“CyberHawk turns a folder into a persistent vulnerability-response queue.”
+“PickBits Dependency Audit turns a folder into a persistent vulnerability-response queue.”
 
 **11-18 seconds:** Show `ALLOW_LOCKED`, `REVIEW`, and `QUARANTINE`.<br>
 “It separates what the lockfile proves from what still needs trust evidence.”
@@ -120,10 +120,10 @@ Trust nothing. Verify everything. Trap unauthorized automation.
 “Recommendations cross a narrow data boundary. The human still owns the change.”
 
 **24-27 seconds:** Trigger the controlled canary; show the critical banner.<br>
-“And if automation touches a boundary marker, CyberHawk records it.”
+“And if automation touches a boundary marker, the audit records it.”
 
 **27-30 seconds:** Logo and CTA.<br>
-“Trust nothing. Verify everything. Run CyberHawk locally.”
+“Trust nothing. Verify everything. Run PickBits Dependency Audit locally.”
 
 ## Screenshot captions for pickbits.ai/cyberhawk
 

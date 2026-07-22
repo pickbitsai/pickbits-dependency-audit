@@ -1,6 +1,6 @@
-# CyberHawk Zero-Trust Design
+# PickBits Dependency Audit — Zero-Trust Design
 
-CyberHawk treats a package name, lockfile, advisory, feed, report, and AI-generated recommendation as evidence, never as authority. An exact hash match can admit a specific artifact under a policy; it cannot prove that the publisher is honest or that the code is safe.
+PickBits Dependency Audit treats a package name, lockfile, advisory, feed, report, and AI-generated recommendation as evidence, never as authority. An exact hash match can admit a specific artifact under a policy; it cannot prove that the publisher is honest or that the code is safe.
 
 ## Decision model
 
@@ -15,7 +15,7 @@ The current npm gate verifies what the lockfile can prove: a pinned coordinate, 
 
 ## Untrusted-input boundary
 
-Remote and package-controlled strings never become shell commands or agent instructions. CyberHawk applies four rules:
+Remote and package-controlled strings never become shell commands or agent instructions. PickBits Dependency Audit applies four rules:
 
 1. Parse data into a narrow schema.
 2. Validate package names, versions, advisory IDs, and operation types against allowlists.
@@ -38,7 +38,7 @@ An incomplete scan never advances closure. Scan runs, observations, trust assess
 
 ## Defensive canaries
 
-CyberHawk can create a harmless decoy document containing a unique marker and a localhost callback. Legitimate automation is told to stop and request human review. If the callback is touched, the dashboard records a critical event and returns a generic `404`.
+PickBits Dependency Audit can create a harmless decoy document containing a unique marker and a localhost callback. Legitimate automation is told to stop and request human review. If the callback is touched, the dashboard records a critical event and returns a generic `404`.
 
 This is a defensive tripwire, not a weapon:
 
@@ -56,19 +56,19 @@ Node.js 22.5 or newer is required for the prototype SQLite store.
 
 ```powershell
 # Import an existing OSV JSON result, evaluate npm lockfiles, and persist the run.
-node scripts/trust-audit.mjs --scan reports/c-new-osv.json --target C:\new --db reports/cyberhawk-state.db --output reports/cyberhawk-trust-run.json
+node scripts/trust-audit.mjs --scan reports/osv-result.json --target C:\projects --db reports/dependency-audit-state.db --output reports/dependency-audit-run.json
 
 # Serve the stateful dashboard locally.
-node scripts/dashboard-server.mjs --db reports/cyberhawk-state.db --port 8787
+node scripts/dashboard-server.mjs --db reports/dependency-audit-state.db --port 8787
 
 # Create a localhost-only defensive canary.
-node scripts/create-canary.mjs --db reports/cyberhawk-state.db --output reports/cyberhawk-local-canary.json --name local-demo --base-url http://127.0.0.1:8787
+node scripts/create-canary.mjs --db reports/dependency-audit-state.db --output reports/dependency-audit-local-canary.json --name local-demo --base-url http://127.0.0.1:8787
 ```
 
 Release-tool verification is a separate command because a correct dependency result is not useful if the scanner binary itself is unverified:
 
 ```powershell
-node scripts/verify-release.mjs --file C:\path\to\osv-scanner.exe --repository google/osv-scanner --tag v2.4.0 --asset osv-scanner_windows_amd64.exe --db reports/cyberhawk-state.db
+node scripts/verify-release.mjs --file C:\path\to\osv-scanner.exe --repository google/osv-scanner --tag v2.4.0 --asset osv-scanner_windows_amd64.exe --db reports/dependency-audit-state.db
 ```
 
 Digest equality proves that the local bytes match the named release asset. It does not substitute for a verified provenance statement or a platform signature.

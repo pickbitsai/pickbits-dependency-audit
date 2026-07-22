@@ -13,12 +13,12 @@ try {
 
 const root = path.resolve(".");
 const outputDir = path.resolve("demo/output");
-const outputVideo = path.join(outputDir, "cyberhawk-demo.webm");
-const outputPoster = path.join(outputDir, "cyberhawk-demo-poster.png");
+const outputVideo = path.join(outputDir, "pickbits-dependency-audit-demo.webm");
+const outputPoster = path.join(outputDir, "pickbits-dependency-audit-demo-poster.png");
 const port = 8791;
 fs.mkdirSync(outputDir, { recursive: true });
 const browserCandidates = [
-  process.env.CYBERHAWK_BROWSER,
+  process.env.PICKBITS_AUDIT_BROWSER,
   "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
   "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
 ].filter(Boolean);

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CyberHawk — Start-to-finish demo</title>
+<title>PickBits Dependency Audit — Start-to-finish demo</title>
 <style>
 :root{--bg:#06100d;--panel:#0c1b16;--panel2:#10251e;--line:#21453a;--text:#f2faf6;--muted:#91aaa0;--mint:#4ce5a3;--mint2:#a6f7d4;--red:#ff6178;--amber:#ffb454;--blue:#76bfff}
 *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,"Segoe UI",system-ui,sans-serif}
@@ -20,14 +20,14 @@ body:before{content:"";position:fixed;inset:0;background:radial-gradient(circle 
 </head>
 <body>
 <main class="frame">
-  <header class="top"><div class="brand"><b>CYBER</b>HAWK <small>// OPEN SOURCE WATCHDOG</small></div><div class="chapter" id="chapter">01 / 07</div></header>
+  <header class="top"><div class="brand"><b>PICKBITS</b> DEPENDENCY AUDIT <small>// LOCAL EVIDENCE WORKFLOW</small></div><div class="chapter" id="chapter">01 / 07</div></header>
   <div class="stage">
     <section class="scene active" data-label="Point it at a folder">
-      <div><div class="eyebrow rise">Start with the code you actually have</div><h1 class="rise delay1">Point CyberHawk at a <span class="accent">folder.</span></h1><p class="rise delay2">One repository or an entire local portfolio. Read-only discovery first. No package installs. No lifecycle scripts.</p></div>
-      <div class="terminal rise delay2"><div class="terminal-head"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span>PowerShell</span></div><pre><span class="prompt">PS C:\&gt;</span> cyberhawk scan C:\new&#10;&#10;<span class="comment"># read-only dependency discovery</span>&#10;<span class="ok">✓</span> target accepted&#10;<span class="ok">✓</span> package managers disabled&#10;<span class="ok">✓</span> local evidence store ready</pre></div>
+      <div><div class="eyebrow rise">Start with the code you actually have</div><h1 class="rise delay1">Audit a project or <span class="accent">local portfolio.</span></h1><p class="rise delay2">Read-only discovery first. No package installs. No lifecycle scripts. No source-code upload.</p></div>
+      <div class="terminal rise delay2"><div class="terminal-head"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span>PowerShell</span></div><pre><span class="prompt">PS C:\projects&gt;</span> osv-scanner scan source -r `&#10;  --all-packages --format=json .&#10;&#10;<span class="comment"># structured dependency evidence</span>&#10;<span class="ok">✓</span> dependency inputs discovered&#10;<span class="ok">✓</span> advisories matched by OSV&#10;<span class="ok">✓</span> human review required</pre></div>
     </section>
     <section class="scene" data-label="Discover the portfolio">
-      <div><div class="eyebrow rise">01 — Inventory</div><h2 class="rise delay1">Find every dependency surface.</h2><p class="rise delay2">CyberHawk locates manifests and lockfiles without resolving or executing the project.</p></div>
+      <div><div class="eyebrow rise">01 — Inventory</div><h2 class="rise delay1">Find every dependency surface.</h2><p class="rise delay2">PickBits Dependency Audit locates manifests and lockfiles without resolving or executing the project.</p></div>
       <div class="grid rise delay2"><div class="metric good"><span>Dependency inputs</span><strong>78</strong></div><div class="metric"><span>Projects represented</span><strong>60</strong></div><div class="metric wide"><span>Package occurrences discovered</span><strong>27,474</strong></div></div>
     </section>
     <section class="scene" data-label="Check live disclosures">
@@ -39,14 +39,14 @@ body:before{content:"";position:fixed;inset:0;background:radial-gradient(circle 
       <div class="panel rise delay2"><div class="trust-row"><span class="pill allow">ALLOW_LOCKED</span><p>Integrity + approved registry</p><strong>25,816</strong></div><div class="trust-row"><span class="pill review">REVIEW</span><p>Incomplete or high-priority evidence</p><strong>2,123</strong></div><div class="trust-row"><span class="pill quarantine">QUARANTINE</span><p>Lifecycle scripts stay inactive</p><strong>243</strong></div></div>
     </section>
     <section class="scene" data-label="Build a reviewable action">
-      <div><div class="eyebrow rise">04 — Human approval boundary</div><h2 class="rise delay1">Turn the finding into data, <span class="accent">not a prompt.</span></h2><p class="rise delay2">CyberHawk emits a constrained remediation request. A separate executor must earn permission to act.</p></div>
+      <div><div class="eyebrow rise">04 — Human approval boundary</div><h2 class="rise delay1">Turn the finding into data, <span class="accent">not a prompt.</span></h2><p class="rise delay2">The audit emits a constrained remediation request. A separate executor must earn permission to act.</p></div>
       <div class="panel json rise delay2">{&#10;  <span class="key">"operation"</span>: <span class="string">"update_dependency"</span>,&#10;  <span class="key">"package"</span>: <span class="string">"vitest"</span>,&#10;  <span class="key">"installed"</span>: <span class="string">"2.1.9"</span>,&#10;  <span class="key">"fixed"</span>: <span class="string">"3.2.6"</span>,&#10;  <span class="key">"advisory"</span>: <span class="string">"CVE-2026-47429"</span>,&#10;  <span class="key">"approval"</span>: <span class="flag">"required"</span>&#10;}</div>
     </section>
     <section class="scene center" data-label="Verify the outcome">
-      <div><div class="eyebrow rise">05 — Persistent response</div><h2 class="rise delay1">A fix is not closed because a button was clicked.</h2><p class="rise delay2">CyberHawk keeps the item pending until repeated complete scans prove it absent. Defensive canaries record unexpected autonomous handling in the same local evidence trail.</p><div class="flow rise delay3"><div class="flow-step"><b>Open</b><span>Observed in scan</span></div><div class="arrow">→</div><div class="flow-step"><b>Pending</b><span>Absent once</span></div><div class="arrow">→</div><div class="flow-step"><b>Closed — fixed</b><span>Absent twice</span></div></div></div>
+      <div><div class="eyebrow rise">05 — Persistent response</div><h2 class="rise delay1">A fix is not closed because a button was clicked.</h2><p class="rise delay2">The audit keeps the item pending until repeated complete scans prove it absent. Defensive canaries record unexpected autonomous handling in the same local evidence trail.</p><div class="flow rise delay3"><div class="flow-step"><b>Open</b><span>Observed in scan</span></div><div class="arrow">→</div><div class="flow-step"><b>Pending</b><span>Absent once</span></div><div class="arrow">→</div><div class="flow-step"><b>Closed — fixed</b><span>Absent twice</span></div></div></div>
     </section>
     <section class="scene center" data-label="Review the local dashboard">
-      <div><div class="eyebrow rise">The local result</div><h2 class="rise delay1">Trust nothing. Verify everything.</h2><p class="rise delay2">A private dashboard for findings, admission evidence, tool verification, remediation state, and defensive canaries.</p><div class="dashboard rise delay3"><div class="dash-card danger"><span>Open findings</span><strong>2,530</strong></div><div class="dash-card"><span>Pending</span><strong>0</strong></div><div class="dash-card good"><span>Closed</span><strong>0</strong></div><div class="dash-card good"><span>Allowed locked</span><strong>25,816</strong></div><div class="dash-card warn"><span>Quarantine</span><strong>243</strong></div><div class="dash-card danger"><span>Controlled canary test</span><strong>1</strong></div></div><div class="cta rise delay3"><span class="button">github.com/pickbitsai/cyberhawk-audit</span><span class="button secondary">pickbits.ai/cyberhawk</span></div></div>
+      <div><div class="eyebrow rise">The local result</div><h2 class="rise delay1">Trust nothing. Verify everything.</h2><p class="rise delay2">A private dashboard for findings, admission evidence, tool verification, remediation state, and defensive canaries.</p><div class="dashboard rise delay3"><div class="dash-card danger"><span>Open findings</span><strong>2,530</strong></div><div class="dash-card"><span>Pending</span><strong>0</strong></div><div class="dash-card good"><span>Closed</span><strong>0</strong></div><div class="dash-card good"><span>Allowed locked</span><strong>25,816</strong></div><div class="dash-card warn"><span>Quarantine</span><strong>243</strong></div><div class="dash-card danger"><span>Controlled canary test</span><strong>1</strong></div></div><div class="cta rise delay3"><span class="button">github.com/pickbitsai/pickbits-dependency-audit</span><span class="button secondary">CyberHawk research · pickbits.ai/cyberhawk</span></div></div>
     </section>
   </div>
   <footer class="footer"><span id="sceneLabel">Point it at a folder</span><div class="progress"><span id="progress"></span></div><span>Measured local run · July 22, 2026</span></footer>
@@ -73,7 +73,7 @@ body:before{content:"";position:fixed;inset:0;background:radial-gradient(circle 
   function next(){if(current>=scenes.length-1){window.demoComplete=true;return;}show(current+1);setTimeout(next,sceneMs);}
   show(0);
   if(params.get('autoplay')!=='0') setTimeout(next,sceneMs);
-  window.showCyberHawkScene=show;
+  window.showDependencyAuditScene=show;
 })();
 </script>
 </body>

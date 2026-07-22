@@ -1,4 +1,4 @@
-# CyberHawk Demo Video
+# PickBits Dependency Audit Demo Video
 
 The repository includes a self-contained, captioned 16:9 product demo at `demo/index.html`. It uses sanitized aggregate measurements from the July 22, 2026 local run and never displays repository names, source paths, or canary tokens.
 
@@ -6,7 +6,7 @@ The repository includes a self-contained, captioned 16:9 product demo at `demo/i
 
 The 30-second cut follows the complete workflow:
 
-1. Point CyberHawk at a local folder.
+1. Run PickBits Dependency Audit against a local folder.
 2. Discover dependency manifests without executing the project.
 3. Match installed versions to structured OSV advisories.
 4. Evaluate lockfile evidence under the zero-trust policy.
@@ -20,7 +20,7 @@ The 30-second cut follows the complete workflow:
 npm run demo:serve
 ```
 
-Open `http://127.0.0.1:8790/demo/`. Add `?autoplay=0` to stop automatic scene changes, then call `showCyberHawkScene(0)` through `showCyberHawkScene(6)` from the browser console for still capture.
+Open `http://127.0.0.1:8790/demo/`. Add `?autoplay=0` to stop automatic scene changes, then call `showDependencyAuditScene(0)` through `showDependencyAuditScene(6)` from the browser console for still capture.
 
 ## Render
 
@@ -33,14 +33,14 @@ npm run demo:video
 
 Outputs:
 
-- `demo/output/cyberhawk-demo.webm`
-- `demo/output/cyberhawk-demo-poster.png`
+- `demo/output/pickbits-dependency-audit-demo.webm`
+- `demo/output/pickbits-dependency-audit-demo-poster.png`
 
 The video is silent by design so it works muted on a landing page. The captions carry the complete story.
 
 ## Optional voiceover
 
-> Most of our code does not live in one perfect repository. Point CyberHawk at a folder and it discovers the dependency surfaces without installing or executing the project. Structured OSV advisories show what is vulnerable. The zero-trust gate separates exact locked artifacts from incomplete evidence and active package scripts. Findings become typed remediation requests, not free-form commands. A fix stays pending until repeated complete scans prove it absent, while defensive canaries record unexpected automation. The result is a private, persistent vulnerability-response dashboard you can run locally. CyberHawk is open source.
+> Most of our code does not live in one perfect repository. PickBits Dependency Audit discovers dependency surfaces without installing or executing the project. Structured OSV advisories show what is vulnerable. The zero-trust gate separates exact locked artifacts from incomplete evidence and active package scripts. Findings become typed remediation requests, not free-form commands. A fix stays pending until repeated complete scans prove it absent, while defensive canaries record unexpected automation. The result is a private, persistent vulnerability-response dashboard you can run locally. The workflow is open source.
 
 ## Publishing
 

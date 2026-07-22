@@ -1,14 +1,14 @@
-# CyberHawk — Product Direction
+# PickBits Dependency Audit — Product Direction
 
 ## Recommendation
 
 Ship an open-source, cross-platform command-line watchdog first, then wrap the same engine with a thin Windows quick-launch experience. The engine must behave consistently from a terminal, cron, Windows Task Scheduler, CI, or an approved agent routine.
 
-CyberHawk uses OSV as its default vulnerability source. It does not require a PickBits feed. A team may supply its own local CVE watchlist as an optional priority overlay.
+PickBits Dependency Audit uses OSV as its default vulnerability source. It does not require a PickBits feed. A team may supply its own local CVE watchlist as an optional priority overlay.
 
 ## Product promise
 
-> Point CyberHawk at a code folder. It shows what is vulnerable, what the package evidence can prove, what needs human judgment, and whether a proposed fix stayed fixed.
+> Audit a code folder. See what is vulnerable, what the package evidence can prove, what needs human judgment, and whether a proposed fix stayed fixed.
 
 This is a dependency vulnerability watchdog, not antivirus. It does not inspect arbitrary executables, memory, malware behavior, or source-code reachability.
 
@@ -54,15 +54,15 @@ The watchlist is local, explicit, and user-controlled. The engine never needs to
 
 ## Stable command surface
 
-The standalone product should converge on:
+The current prototype deliberately exposes the tested OSV and Node.js commands. A future standalone CLI may converge on:
 
 ```text
-cyberhawk scan <folder>
-cyberhawk report <scan-id>
-cyberhawk watchlist scan <folder> --file <local-file>
-cyberhawk schedule add <folder> --weekly
-cyberhawk schedule list
-cyberhawk doctor
+pickbits-audit scan <folder>
+pickbits-audit report <scan-id>
+pickbits-audit watchlist scan <folder> --file <local-file>
+pickbits-audit schedule add <folder> --weekly
+pickbits-audit schedule list
+pickbits-audit doctor
 ```
 
 `scan` must never install dependencies or invoke lifecycle scripts. It should write reports outside the source tree by default and disclose every network destination used for advisory metadata.
@@ -112,7 +112,7 @@ An incomplete scan never advances closure and never yields an unqualified clean 
 Build a signed per-user installer after the CLI and report schema stabilize. The first Windows release should provide:
 
 - Start Menu shortcut;
-- Explorer “Scan with CyberHawk” action;
+- Explorer “Audit dependencies with PickBits” action;
 - folder picker and saved targets;
 - Scan Now button;
 - report history and last-run status;
@@ -138,11 +138,11 @@ The durable advantage is operational workflow and trustworthy normalization—no
 
 ## Differentiation
 
-CyberHawk complements repository-native tools:
+PickBits Dependency Audit complements repository-native tools:
 
 - Dependabot is strong at GitHub-native update pull requests.
 - OSV-Scanner is the source of truth for package/advisory matching.
-- CyberHawk adds local portfolio discovery, persistent remediation state, artifact-admission evidence, constrained agent actions, and defensive canaries.
+- PickBits Dependency Audit adds local portfolio discovery, persistent remediation state, artifact-admission evidence, constrained agent actions, and defensive canaries.
 
 ## Release gates
 

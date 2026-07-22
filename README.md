@@ -1,124 +1,112 @@
-# CyberHawk
+# PickBits Dependency Audit
 
-**Know what is vulnerable. Verify what can act.**
+**Local dependency evidence without automatic patch authority.**
 
-CyberHawk is an open-source dependency vulnerability watchdog for local code folders and small development portfolios. It scans package manifests and lockfiles with [OSV-Scanner](https://github.com/google/osv-scanner), persists findings across runs, evaluates npm artifact evidence under a zero-trust policy, and produces local reports with human-approved remediation requests.
+PickBits Dependency Audit is the small, open-source workflow PickBits uses to support its [CyberHawk vulnerability research](https://pickbits.ai/cyberhawk/). It scans local dependency manifests and lockfiles with [OSV-Scanner](https://github.com/google/osv-scanner), persists findings across runs, evaluates npm artifact evidence under an explicit zero-trust policy, and produces a local HTML report with human-reviewed remediation requests.
 
-CyberHawk does not depend on a PickBits CVE feed. OSV is the default vulnerability source. Teams can optionally supply their own local CVE watchlist—or explicitly import an unlisted personal CyberHawk RSS queue—as an additional prioritization layer.
+OSV is the default vulnerability source. CyberHawk editorial lists and personal RSS queues are optional prioritization overlays; the audit does not require a PickBits feed.
 
 This is dependency vulnerability scanning, not antivirus, malware detection, reachability analysis, or proof that an application is secure.
 
 ## What it does
 
-- Discovers supported dependency manifests and lockfiles.
-- Runs OSV-Scanner without installing project dependencies.
-- Persists findings and observations in a local SQLite database.
+- Discovers supported dependency manifests and lockfiles without installing packages.
+- Runs OSV-Scanner against one project or a local folder containing many projects.
+- Persists runs, findings, and observations in a local SQLite database.
 - Requires two complete scans without a finding before marking it closed.
 - Classifies npm lockfile records as `ALLOW_LOCKED`, `REVIEW`, `QUARANTINE`, or `BLOCK`.
-- Verifies scanner bytes against named release metadata.
-- Generates a filterable local HTML report and constrained remediation requests.
+- Generates a filterable, standalone HTML report and constrained remediation requests.
 - Records harmless defensive-canary hits for unexpected autonomous handling.
-- Keeps patch execution behind human approval.
+- Keeps every patch behind an explicit human approval boundary.
 
 `ALLOW_LOCKED` is intentionally narrow: the exact version has integrity evidence and resolves through an approved registry. It does not mean the publisher or package is trusted.
 
 ## Status
 
-The Claude Code skill, portfolio report, trust audit, persistent dashboard, release verifier, and local canary prototype work today. The scheduled standalone binary, sandboxed patch executor, Windows quick-launch installer, and team fleet collector remain planned work.
+The report, SQLite evidence store, npm admission audit, release verifier, defensive-canary prototype, and optional Claude Code adapter work today. A signed standalone binary, sandboxed patch executor, Windows quick-launch installer, and team fleet collector remain planned work.
 
-## Install
+## Install the core workflow
 
-Install [OSV-Scanner v2](https://google.github.io/osv-scanner/installation/) first, then clone this repository into a Claude Code skills directory:
+Requirements:
+
+- Node.js 22.5 or newer
+- [OSV-Scanner v2](https://google.github.io/osv-scanner/installation/)
 
 ```bash
-# macOS / Linux
-git clone https://github.com/pickbitsai/cyberhawk-audit ~/.claude/skills/cyberhawk
+git clone https://github.com/pickbitsai/pickbits-dependency-audit.git
+cd pickbits-dependency-audit
+npm ci
 ```
 
-```powershell
-# Windows PowerShell
-git clone https://github.com/pickbitsai/cyberhawk-audit "$env:USERPROFILE\.claude\skills\cyberhawk"
-```
-
-The public product name is CyberHawk. The GitHub repository still uses the historical `cyberhawk-audit` slug until the repository itself is renamed.
-
-## Run from Claude Code
-
-Invoke the skill directly:
-
-```text
-/cyberhawk
-```
-
-Or ask naturally:
-
-```text
-Run CyberHawk on this project and give me the local report.
-```
-
-The default run uses OSV and does not fetch the PickBits website or editorial feed.
-
-## Run the prototype pipeline
-
-Node.js 22.5 or newer is required for the local SQLite prototype.
-
-First create an OSV JSON result for the target folder:
+Create an OSV JSON result for a target folder:
 
 ```powershell
 osv-scanner scan source -r --all-packages --format=json C:\path\to\project > reports\osv-result.json
 ```
 
-OSV-Scanner uses exit code `1` when vulnerabilities are found; that is a successful scan result, not a scanner failure.
+OSV-Scanner uses exit code `1` when vulnerabilities are found. That is a completed scan result, not a scanner failure.
 
 Import the scan, evaluate npm lockfiles, and persist the evidence:
 
 ```powershell
-node scripts/trust-audit.mjs --scan reports/osv-result.json --target C:\path\to\project --db reports/cyberhawk-state.db --output reports/cyberhawk-trust-run.json
+node scripts\trust-audit.mjs --scan reports\osv-result.json --target C:\path\to\project --db reports\dependency-audit-state.db --output reports\dependency-audit-run.json
 ```
 
-Generate the standalone portfolio report:
+Generate the standalone report:
 
 ```powershell
-node scripts/generate-report.mjs --scan reports/osv-result.json --target C:\path\to\project --output reports/cyberhawk-report.html
+node scripts\generate-report.mjs --scan reports\osv-result.json --target C:\path\to\project --output reports\dependency-audit-report.html
 ```
 
-An optional user-controlled watchlist can be a local text, JSON, or HTML file containing CVE IDs:
+Start the persistent local dashboard:
 
 ```powershell
-node scripts/generate-report.mjs --scan reports/osv-result.json --target C:\path\to\project --watchlist .\security-priorities.txt --watchlist-label "Internal priorities" --output reports/cyberhawk-report.html
+node scripts\dashboard-server.mjs --db reports\dependency-audit-state.db --port 8787
 ```
 
-No remote watchlist is fetched automatically.
+Open `http://127.0.0.1:8787`. Add `?view=public` for a presentation-safe aggregate view that hides project names, target paths, detailed findings, and canary markers.
 
-If you created an unlisted personal RSS queue at PickBits, import only its validated CVE identifiers before running the report:
+Generated reports and state databases are ignored by Git because dependency names and local paths can be sensitive.
+
+## Optional CyberHawk watch queue
+
+A user-created CyberHawk RSS feed can be reduced to validated CVE identifiers and used as an additional priority view:
 
 ```powershell
-node scripts/import-watchlist.mjs --url "https://vbfwzpztnvfktydozgir.supabase.co/functions/v1/cyberhawk-feed/YOUR_TOKEN.xml" --output .cyberhawk\my-watchlist.txt
-node scripts/generate-report.mjs --scan reports\osv-result.json --target C:\path\to\project --watchlist .cyberhawk\my-watchlist.txt --watchlist-label "My watch queue" --output reports\cyberhawk-report.html
+node scripts\import-watchlist.mjs --url "https://vbfwzpztnvfktydozgir.supabase.co/functions/v1/cyberhawk-feed/YOUR_TOKEN.xml" --output .pickbits-audit\my-watchlist.txt
+node scripts\generate-report.mjs --scan reports\osv-result.json --target C:\path\to\project --watchlist .pickbits-audit\my-watchlist.txt --watchlist-label "My watch queue" --output reports\dependency-audit-report.html
 ```
 
-The importer requires HTTPS, permits only the expected feed host and token route by default, refuses redirects, caps responses at 1 MiB, and discards everything except syntactically valid CVE identifiers. A feed is optional prioritization data; it never replaces OSV coverage or becomes executable instructions.
+The importer requires HTTPS, permits only the expected feed host and token route by default, refuses redirects, caps responses at 1 MiB, and discards everything except syntactically valid CVE identifiers. Feed content is optional untrusted data, never executable instruction text.
 
-Start the persistent dashboard:
+## Optional Claude Code adapter
+
+The scanner and report work without an AI agent. If you use Claude Code, the bundled `SKILL.md` can orchestrate the same commands and preserve the same approval boundaries.
+
+Clone the repository into a Claude Code skills directory only if you want that adapter:
+
+```bash
+# macOS / Linux
+git clone https://github.com/pickbitsai/pickbits-dependency-audit ~/.claude/skills/pickbits-dependency-audit
+```
 
 ```powershell
-node scripts/dashboard-server.mjs --db reports/cyberhawk-state.db --port 8787
+# Windows PowerShell
+git clone https://github.com/pickbitsai/pickbits-dependency-audit "$env:USERPROFILE\.claude\skills\pickbits-dependency-audit"
 ```
 
-Open `http://127.0.0.1:8787`. Use `http://127.0.0.1:8787/?view=public` for a presentation-safe aggregate view that hides project names, target paths, detailed findings, and canary markers.
-
-Generated reports and state databases are ignored by Git because dependency names and paths can be sensitive.
+Then invoke `/pickbits-dependency-audit` or ask Claude Code to run a local dependency audit and create the HTML report.
 
 ## Scheduling
 
-Schedule the same read-only scan command using the surface that can reach the target:
+Schedule the same read-only workflow using the surface that can reach the target:
 
 - Windows Task Scheduler for local Windows folders;
 - cron or systemd timers for local Unix folders;
 - GitHub Actions for repository-owned CI scans; or
-- Claude scheduled tasks and routines where their execution environment has repository access.
+- an approved agent routine where its execution environment has repository access.
 
-Scheduling is an adapter around the scan. It does not grant automatic patch authority.
+Scheduling is an adapter around the audit. It does not grant automatic patch authority.
 
 ## Safety model
 
@@ -135,11 +123,10 @@ Scheduling is an adapter around the scan. It does not grant automatic patch auth
 
 - [Zero-trust design](docs/zero-trust-design.md)
 - [Product direction](docs/product-brief.md)
-- [Local test results](docs/pickbits-cyberhawk-results-2026-07-22.md)
+- [Redacted local case study](docs/pickbits-cyberhawk-results-2026-07-22.md)
 - [Demo production guide](docs/demo-video.md)
-- [Launch and campaign copy](docs/campaign-zero-trust.md)
 - [Security policy](SECURITY.md)
-- [Personal RSS queues and skill recipe](docs/personal-feeds.md)
+- [Personal CyberHawk feeds](docs/personal-feeds.md)
 
 ## License
 

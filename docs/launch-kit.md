@@ -1,4 +1,4 @@
-# CyberHawk — Launch Kit
+# PickBits Dependency Audit — Launch Kit
 
 ## Positioning
 
@@ -14,11 +14,11 @@
 
 **One-sentence pitch:**
 
-CyberHawk is an open-source local watchdog that scans dependency files with OSV, evaluates artifact evidence under a zero-trust policy, persists remediation state, and proposes constrained fixes for human approval.
+PickBits Dependency Audit is an open-source local workflow that scans dependency files with OSV, evaluates artifact evidence under a zero-trust policy, persists remediation state, and proposes constrained fixes for human approval.
 
 **The honest differentiator:**
 
-CyberHawk is not another vulnerability database and does not depend on a PickBits feed. It is the operational layer between structured OSV findings and a safe, persistent remediation workflow for local code.
+PickBits Dependency Audit is not another vulnerability database and does not depend on a PickBits feed. It is the operational layer between structured OSV findings and a safe, persistent remediation workflow for local code.
 
 ## Website hero
 
@@ -26,7 +26,7 @@ CyberHawk is not another vulnerability database and does not depend on a PickBit
 
 **Headline:** Trust nothing in the dependency chain. Especially the instructions.
 
-**Subhead:** Point CyberHawk at one project or a folder full of them. It finds vulnerable dependency versions, shows what the lockfile can prove, quarantines active package content, and produces a local dashboard with reviewable actions.
+**Subhead:** Audit one project or a folder full of them. Find vulnerable dependency versions, show what the lockfile can prove, quarantine active package content, and produce a local dashboard with reviewable actions.
 
 **Primary CTA:** View the open-source project<br>
 **Secondary CTA:** Watch the 30-second demo
@@ -35,7 +35,7 @@ CyberHawk is not another vulnerability database and does not depend on a PickBit
 
 ## Short announcement
 
-We built CyberHawk for the code that does not live in one perfect repository.
+We built PickBits Dependency Audit for code that does not live in one perfect repository.
 
 It is an open-source dependency vulnerability watchdog that scans local projects with OSV, persists findings across runs, evaluates npm lockfile evidence, and turns remediation into a typed request instead of a free-form command.
 
@@ -47,7 +47,7 @@ The zero-trust boundary is the product:
 - findings close only after repeated complete scans; and
 - harmless canaries record unexpected autonomous handling.
 
-CyberHawk is report-only today. The engine, policy, dashboard, tests, and demo are open source under MIT.
+PickBits Dependency Audit is report-only today. The engine, policy, dashboard, tests, and demo are open source under MIT.
 
 [Watch the demo] [View GitHub]
 
@@ -57,7 +57,7 @@ Most dependency tools start with a repository.
 
 We started with a folder.
 
-CyberHawk is an open-source vulnerability-response workflow for local code, prototypes, uncommitted work, and multi-repository portfolios. It uses OSV to identify known vulnerable package versions, then asks a separate question: what does the package evidence actually prove, and what should automation be allowed to do next?
+PickBits Dependency Audit is an open-source vulnerability-response workflow for local code, prototypes, uncommitted work, and multi-repository portfolios. It uses OSV to identify known vulnerable package versions, then asks a separate question: what does the package evidence actually prove, and what should automation be allowed to do next?
 
 In our measured Windows portfolio run:
 
@@ -71,13 +71,13 @@ Publisher provenance remained unknown. That is intentional. A checksum is eviden
 
 The workflow creates typed remediation requests, requires repeated complete scans before closure, verifies the scanner bytes, and supports harmless defensive canaries. It does not silently patch packages or pretend a missing join means secure.
 
-CyberHawk is open source under MIT. It uses OSV directly and does not depend on a PickBits feed.
+PickBits Dependency Audit is open source under MIT. It uses OSV directly and does not depend on a PickBits feed.
 
 [Watch the 30-second demo] [Inspect the source]
 
 ## Short social post
 
-Your scanner found a CVE. CyberHawk asks what happens next.
+Your scanner found a CVE. PickBits Dependency Audit asks what happens next.
 
 - local folder and portfolio scans
 - structured OSV findings
@@ -93,11 +93,11 @@ Open source. Report-only. No PickBits feed required.
 
 ## Hacker News / technical community post
 
-**Title:** Show HN: CyberHawk — local vulnerability response with zero-trust package gates
+**Title:** Show HN: PickBits Dependency Audit — local vulnerability response with zero-trust package gates
 
 **Body:**
 
-CyberHawk is an open-source workflow around OSV-Scanner for code that may span many local folders or never reach GitHub. It imports structured vulnerability results, persists observations in SQLite, evaluates npm lockfile evidence, and produces a local HTML dashboard with typed remediation requests.
+PickBits Dependency Audit is an open-source workflow around OSV-Scanner for code that may span many local folders or never reach GitHub. It imports structured vulnerability results, persists observations in SQLite, evaluates npm lockfile evidence, and produces a local HTML dashboard with typed remediation requests.
 
 The package gate is deliberately narrow. Exact version + integrity + approved registry yields `ALLOW_LOCKED`, which permits analysis but does not establish publisher trust or install authority. Lifecycle scripts are quarantined. A finding closes only after repeated complete scans prove it absent.
 
@@ -109,7 +109,7 @@ The workflow is report-only today. Feedback on the evidence schema, sandboxed ex
 
 The captioned video and production notes live in [demo-video.md](demo-video.md). The scene sequence is:
 
-1. point CyberHawk at a folder;
+1. run PickBits Dependency Audit against a folder;
 2. discover dependency inputs;
 3. match versions to OSV;
 4. evaluate trust evidence;
@@ -131,9 +131,9 @@ The captioned video and production notes live in [demo-video.md](demo-video.md).
 
 ## Launch checklist
 
-- Complete a trademark and counsel review before investing further in the bare `CyberHawk` name.
+- Keep CyberHawk references limited to the PickBits editorial vulnerability feed; the software name is PickBits Dependency Audit.
 - Rename the GitHub repository slug if the final product name is approved.
-- Publish the rendered WebM and poster with the `/cyberhawk` page.
+- Publish the rendered WebM and poster with the `/cyberhawk/audit/` page.
 - Verify mobile layout, playback, GitHub links, and reduced-motion behavior.
 - Publish checksums and signatures for executable releases.
 - Enable GitHub private vulnerability reporting.

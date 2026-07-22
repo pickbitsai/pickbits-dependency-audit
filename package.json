@@ -1,8 +1,8 @@
 {
-  "name": "cyberhawk",
-  "version": "0.4.0-prototype",
+  "name": "pickbits-dependency-audit",
+  "version": "0.5.0-prototype",
   "private": true,
-  "description": "Open-source local dependency vulnerability response and zero-trust admission prototype",
+  "description": "PickBits' open-source local dependency audit and zero-trust evidence prototype",
   "type": "module",
   "license": "MIT",
   "scripts": {

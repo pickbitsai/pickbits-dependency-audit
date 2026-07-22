@@ -1,6 +1,6 @@
 # Security Policy
 
-CyberHawk processes untrusted manifests, lockfiles, advisory data, and report strings. Security bugs in those paths are treated as high priority.
+PickBits Dependency Audit processes untrusted manifests, lockfiles, advisory data, and report strings. Security bugs in those paths are treated as high priority.
 
 ## Report a vulnerability
 
@@ -27,7 +27,7 @@ Do not include real credentials, proprietary source code, or private dependency 
 
 ## Scope boundaries
 
-CyberHawk is a dependency vulnerability tool. It does not scan arbitrary malware, running processes, network services, source-code vulnerabilities, secrets, or deployment configuration unless a future component explicitly says otherwise.
+PickBits Dependency Audit is a dependency vulnerability tool. It does not scan arbitrary malware, running processes, network services, source-code vulnerabilities, secrets, or deployment configuration unless a future component explicitly says otherwise.
 
 OSV-Scanner and the OSV service are separate upstream projects. Vulnerabilities in their code or service should also be reported through their official security channels.
 

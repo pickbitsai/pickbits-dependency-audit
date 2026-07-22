@@ -40,4 +40,4 @@ const server = http.createServer((request, response) => {
   fs.createReadStream(target).pipe(response);
 });
 
-server.listen(port, "127.0.0.1", () => console.log(`CyberHawk demo: http://127.0.0.1:${port}/demo/`));
+server.listen(port, "127.0.0.1", () => console.log(`PickBits Dependency Audit demo: http://127.0.0.1:${port}/demo/`));
