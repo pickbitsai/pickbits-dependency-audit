@@ -15,6 +15,22 @@ function parseArgs(argv) {
   return values;
 }
 
+function loadAcve(acvePath) {
+  if (!acvePath) return null;
+  let acve;
+  try {
+    acve = JSON.parse(fs.readFileSync(acvePath, "utf8"));
+  } catch (error) {
+    console.error(`Invalid ACVE output at ${acvePath}: ${error.message}`);
+    process.exit(2);
+  }
+  if (!Array.isArray(acve?.results)) {
+    console.error(`Invalid ACVE output at ${acvePath}: expected a results[] array`);
+    process.exit(2);
+  }
+  return acve;
+}
+
 const args = parseArgs(process.argv.slice(2));
 const required = ["scan", "target", "output"];
 for (const key of required) {
@@ -27,10 +43,13 @@ for (const key of required) {
 const target = path.resolve(args.target);
 const scanPath = path.resolve(args.scan);
 const outputPath = path.resolve(args.output);
+const acvePath = args.acve ? path.resolve(args.acve) : null;
 const watchlistPath = args.watchlist ? path.resolve(args.watchlist) : null;
 const weeklyOsvDir = args["watchlist-osv-dir"] ? path.resolve(args["watchlist-osv-dir"]) : null;
 const weekLabel = args["watchlist-label"] || (watchlistPath ? path.basename(watchlistPath) : "No external watchlist");
 const scan = JSON.parse(fs.readFileSync(scanPath, "utf8"));
+const acve = loadAcve(acvePath);
+if (acve) scan.results = [...(scan.results || []), ...acve.results];
 const watchlistText = watchlistPath ? fs.readFileSync(watchlistPath, "utf8") : "";
 const weeklyCves = [...new Set(watchlistText.match(/CVE-\d{4}-\d{4,7}/g) || [])].sort();
 
@@ -143,6 +162,7 @@ function dependencyContext(source, packageInfo) {
   const normalized = normalizeSource(source);
   const directory = path.win32.dirname(normalized);
   const filename = path.win32.basename(normalized).toLowerCase();
+  if (filename === "acve.lock.json") return { direct: true, kind: "agent-config", manifest: relativeSource(normalized), manager: "acve" };
   const packageJsonPath = path.win32.join(directory, "package.json");
   const packageJson = readJsonIfPresent(packageJsonPath);
   if (packageJson) {
@@ -180,6 +200,7 @@ function dependencyContext(source, packageInfo) {
 }
 
 function commandFor(context, packageInfo, fixed, type) {
+  if (context.manager === "acve") return null;
   if (!context.direct || !fixed || type === "major" || !safePackageName(packageInfo.name, packageInfo.ecosystem) || !safeVersion(fixed)) return null;
   const spec = `${packageInfo.name}@${fixed}`;
   if (context.manager === "npm") return `npm install --ignore-scripts --save-exact "${spec}"`;
@@ -226,6 +247,8 @@ for (const result of scan.results || []) {
       const weekly = weeklyCves.includes(vulnerability.id) || (vulnerability.aliases || []).some((alias) => weeklyCves.includes(alias));
       const severity = severityLabel(vulnerability.database_specific?.severity);
       const command = commandFor(context, packageInfo, fixed, type);
+      const acveFinding = /^ACVE-/.test(String(vulnerability.id || ""));
+      const fixSummary = vulnerability.database_specific?.acve?.fix?.summary;
       const project = projectFromSource(source);
       const finding = {
         id: findingId([source, packageInfo.ecosystem, packageInfo.name, packageInfo.version, vulnerability.id]),
@@ -246,7 +269,11 @@ for (const result of scan.results || []) {
         direct: context.direct,
         dependencyKind: context.kind,
         command,
-        osvUrl: `https://osv.dev/vulnerability/${encodeURIComponent(vulnerability.id)}`,
+        osvUrl: acveFinding
+          ? `https://pickbits.ai/cyberhawk/acve/${encodeURIComponent(vulnerability.id)}`
+          : `https://osv.dev/vulnerability/${encodeURIComponent(vulnerability.id)}`,
+        acve: acveFinding,
+        note: acveFinding && fixSummary ? String(fixSummary).replace(/\s+/g, " ").slice(0, 500) : undefined,
       };
       finding.request = canonicalRemediationRequest(finding);
       finding.prompt = JSON.stringify(finding.request, null, 2);
@@ -404,13 +431,14 @@ const report = {
     target,
     generatedAt,
     watchlistLabel: weekLabel,
-    scanEngine: "OSV-Scanner",
+    scanEngine: acve ? "OSV-Scanner + ACVE" : "OSV-Scanner",
     scanMode: "read-only, explicit lockfiles, no dependency resolution",
     sourceFiles: sourceFiles.size,
     projects: projectNames.length,
     packageOccurrences: inventory.length,
     uniquePackageCoordinates: packageCoordinates.size,
     affectedProjects: affectedProjects.size,
+    acveSupplied: Boolean(acve),
   },
   summary: {
     findings: findings.length,
@@ -419,6 +447,7 @@ const report = {
     watchlistSupplemental: findings.filter((item) => item.weekly && item.supplemental).length,
     actionable: actionable.length,
     directlyActionable: directlyActionable.length,
+    agentConfigFindings: findings.filter((item) => item.acve).length,
   },
   watchlist: { cves: weeklyCves, ...weeklyAudit },
   projects: projectNames,
@@ -467,6 +496,7 @@ const html = String.raw`<!doctype html>
       <article class="card weekly"><div class="label">Watchlist matches</div><div class="value">${report.summary.watchlistConfirmed + report.summary.watchlistSupplemental}</div><div class="note">${weeklyCves.length ? escapeHtml(weekLabel) : "Optional local input"}</div></article>
       <article class="card"><div class="label">Affected projects</div><div class="value">${report.meta.affectedProjects}</div><div class="note">Of ${report.meta.projects} scanned</div></article>
       <article class="card action"><div class="label">Verified fixes</div><div class="value">${report.summary.actionable}</div><div class="note">${report.summary.directlyActionable} direct dependencies</div></article>
+      <article class="card"><div class="label">Agent-config findings</div><div class="value">${report.summary.agentConfigFindings}</div><div class="note">Configuration coverage</div></article>
       <article class="card"><div class="label">Known findings</div><div class="value">${report.summary.findings}</div><div class="note">Before reachability analysis</div></article>
     </section>
     <div class="notice ${report.summary.watchlistConfirmed + report.summary.watchlistSupplemental ? "warn" : ""}">
@@ -489,7 +519,7 @@ const html = String.raw`<!doctype html>
     <section class="section">
       <div class="section-head"><div><h2>Coverage and trust</h2><div class="section-sub">What this run did and did not prove.</div></div></div>
       <div class="coverage-grid">
-        <article class="coverage-card"><h3>Scan coverage</h3><div class="coverage-list"><span>Dependency inputs</span><strong>${report.meta.sourceFiles}</strong><span>Package occurrences</span><strong>${report.meta.packageOccurrences.toLocaleString()}</strong><span>Unique package coordinates</span><strong>${report.meta.uniquePackageCoordinates.toLocaleString()}</strong><span>Local watchlist CVEs</span><strong>${weeklyCves.length}</strong><span>Watchlist mappings unresolved</span><strong>${report.watchlist.unresolved.length}</strong></div></article>
+        <article class="coverage-card"><h3>Scan coverage</h3><div class="coverage-list"><span>Dependency inputs</span><strong>${report.meta.sourceFiles}</strong><span>Package occurrences</span><strong>${report.meta.packageOccurrences.toLocaleString()}</strong><span>Unique package coordinates</span><strong>${report.meta.uniquePackageCoordinates.toLocaleString()}</strong><span>Local watchlist CVEs</span><strong>${weeklyCves.length}</strong><span>Watchlist mappings unresolved</span><strong>${report.watchlist.unresolved.length}</strong><span>Agent configuration</span><strong>${acve ? `evaluated (${report.summary.agentConfigFindings} findings)` : "not evaluated (run `acve audit --format osv-scanner` and pass `--acve`)"}</strong></div></article>
         <article class="coverage-card"><h3>Safety boundary</h3><p class="muted">This report did not install packages, execute lifecycle scripts, edit manifests, create branches, or push code. Requirements manifests were scanned without remote dependency resolution, so unpinned Python transitive coverage may be incomplete. Findings indicate known vulnerable components, not exploitability or malware.</p></article>
       </div>
     </section>
@@ -504,6 +534,7 @@ const html = String.raw`<!doctype html>
 <script id="dependency-audit-data" type="application/json">${embedded}</script>
 <script>
 const report=JSON.parse(document.getElementById('dependency-audit-data').textContent);const pageSize=50;let page=1;const storageKey='pickbits-dependency-audit:'+report.meta.reportId;let queue=new Set(JSON.parse(localStorage.getItem(storageKey)||'[]'));const el=id=>document.getElementById(id);const projectSelect=el('project');for(const project of report.projects){const option=document.createElement('option');option.value=project;option.textContent=project;projectSelect.append(option)}el('generatedAt').textContent=new Date(report.meta.generatedAt).toLocaleString();function persist(){localStorage.setItem(storageKey,JSON.stringify([...queue]));el('queueCount').textContent=queue.size}function toast(message){const node=el('toast');node.textContent=message;node.classList.add('show');clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>node.classList.remove('show'),2200)}function filtered(){const query=el('search').value.trim().toLowerCase(),severity=el('severity').value,project=el('project').value,action=el('actionability').value;return report.findings.filter(f=>(!query||[f.project,f.package,f.cve,f.advisory,f.summary].some(v=>String(v||'').toLowerCase().includes(query)))&&(!severity||f.severity===severity)&&(!project||f.project===project)&&(!action||(action==='weekly'&&f.weekly)||(action==='fixed'&&f.fixed)||(action==='direct'&&f.direct)||(action==='queued'&&queue.has(f.id))))}function tag(text,className){const span=document.createElement('span');span.className=className;span.textContent=text;return span}function render(){const data=filtered(),pages=Math.max(1,Math.ceil(data.length/pageSize));page=Math.min(page,pages);const start=(page-1)*pageSize,shown=data.slice(start,start+pageSize),body=el('rows');body.replaceChildren();for(const f of shown){const tr=document.createElement('tr');const severity=document.createElement('td');severity.append(tag(f.severity,'sev '+f.severity));if(f.weekly)severity.append(tag(f.supplemental?'weekly · supplemental':'weekly match','weekly-flag'));const project=document.createElement('td');project.append(tag(f.project,'project'));project.append(document.createElement('br'));project.append(tag(f.source,'path'));const dependency=document.createElement('td');dependency.append(tag(f.package,'pkg'));dependency.append(document.createElement('br'));dependency.append(tag(f.installed+' · '+f.ecosystem+(f.direct?' · direct':' · '+f.dependencyKind),'muted'));const advisory=document.createElement('td');advisory.className='hide-md';const link=document.createElement('a');link.href=f.osvUrl;link.target='_blank';link.rel='noopener noreferrer';link.className='pkg';link.style.color='var(--blue)';link.textContent=f.cve||f.advisory;advisory.append(link);advisory.append(document.createElement('br'));advisory.append(tag(f.summary,'muted'));const remediation=document.createElement('td');if(f.fixed){remediation.append(tag(f.installed+' → '+f.fixed,'fix'));remediation.append(document.createElement('br'));remediation.append(tag(f.upgrade+' upgrade'+(f.upgrade==='major'?' · review required':''),'muted'))}else{remediation.append(tag('No verified fixed version','muted'))}const actions=document.createElement('td');const wrap=document.createElement('div');wrap.className='actions';const queueButton=document.createElement('button');queueButton.className='mini '+(queue.has(f.id)?'queued':'');queueButton.textContent=queue.has(f.id)?'Queued ✓':(f.fixed&&f.upgrade!=='major'?'Queue patch':'Queue review');queueButton.onclick=()=>{queue.has(f.id)?queue.delete(f.id):queue.add(f.id);persist();render();toast(queue.has(f.id)?'Added to patch queue':'Removed from queue')};const copyButton=document.createElement('button');copyButton.className='mini';copyButton.textContent=f.command?'Copy command':'Copy prompt';copyButton.onclick=async()=>{await navigator.clipboard.writeText(f.command||f.prompt);toast(f.command?'Command copied':'Remediation prompt copied')};wrap.append(queueButton,copyButton);actions.append(wrap);tr.append(severity,project,dependency,advisory,remediation,actions);body.append(tr)}if(!shown.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=6;td.className='empty';td.textContent='No findings match these filters.';tr.append(td);body.append(tr)}el('resultCount').textContent=data.length.toLocaleString()+' matching findings';el('pageLabel').textContent='Page '+page+' of '+pages;el('previous').disabled=page<=1;el('next').disabled=page>=pages;persist()}function queuedFindings(){return report.findings.filter(f=>queue.has(f.id))}function renderQueue(){const body=el('queueBody'),items=queuedFindings();body.replaceChildren();if(!items.length){const empty=document.createElement('div');empty.className='empty';empty.textContent='Nothing queued yet. Choose “Queue patch” or “Queue review” from a finding.';body.append(empty)}for(const f of items){const item=document.createElement('div');item.className='queue-item';item.append(tag(f.project+' · '+f.package+'@'+f.installed,'project'));item.append(tag((f.cve||f.advisory)+(f.fixed?' → '+f.fixed:' · no verified fix'),'muted'));if(f.command){const code=document.createElement('code');code.textContent=f.command;item.append(code)}body.append(item)}}function download(filename,value,type='application/json'){const blob=new Blob([value],{type});const url=URL.createObjectURL(blob);const anchor=document.createElement('a');anchor.href=url;anchor.download=filename;anchor.click();setTimeout(()=>URL.revokeObjectURL(url),500)}function exportPlan(){const items=queuedFindings();download('dependency-audit-patch-plan-'+report.meta.reportId+'.json',JSON.stringify({schemaVersion:1,report:report.meta,approvedAt:new Date().toISOString(),status:'proposed-not-applied',items:items.map(({id,project,manifest,package:pkg,installed,fixed,upgrade,direct,advisory,cve,command,prompt})=>({id,project,manifest,package:pkg,installed,fixed,upgrade,direct,advisory,cve,command,prompt}))},null,2));toast('Patch plan exported')}for(const id of ['search','severity','project','actionability'])el(id).addEventListener(id==='search'?'input':'change',()=>{page=1;render()});el('previous').onclick=()=>{page-=1;render();document.getElementById('findingsSection').scrollIntoView()};el('next').onclick=()=>{page+=1;render();document.getElementById('findingsSection').scrollIntoView()};el('openQueue').onclick=()=>{renderQueue();el('queueDialog').showModal()};el('closeQueue').onclick=()=>el('queueDialog').close();el('clearQueue').onclick=()=>{queue.clear();persist();renderQueue();render()};el('copyQueue').onclick=async()=>{await navigator.clipboard.writeText(queuedFindings().map(f=>f.command||f.prompt).join('\n\n'));toast('Queue copied')};el('exportQueue').onclick=exportPlan;el('exportTop').onclick=()=>download('dependency-audit-report-'+report.meta.reportId+'.json',JSON.stringify(report,null,2));persist();render();
+const decorateAcveTags=()=>{const ids=new Set(report.findings.filter(f=>f.acve).map(f=>f.cve||f.advisory));for(const row of el('rows').querySelectorAll('tr')){const advisory=row.querySelector('td:nth-child(4) a');const severity=row.querySelector('td:first-child');if(advisory&&severity&&ids.has(advisory.textContent)&&!severity.querySelector('.agent-config-tag')){const marker=tag('agent config','weekly-flag');marker.classList.add('agent-config-tag');severity.append(marker)}}};const rowsObserver=new MutationObserver(decorateAcveTags);rowsObserver.observe(el('rows'),{childList:true});decorateAcveTags();
 </script>
 </body>
 </html>`;

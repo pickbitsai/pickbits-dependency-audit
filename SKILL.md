@@ -9,6 +9,8 @@ You are running PickBits Dependency Audit on the user's current project.
 
 Identify known dependency vulnerabilities, explain coverage gaps, provide structured fixed-version guidance, persist the result when the local audit scripts are available, and create a local report. OSV is the default vulnerability source. Do not fetch or require a PickBits feed.
 
+Agent-configuration coverage is optional through ACVE's CLI-output contract. If ACVE is not available or is not supplied, report agent configuration as **not evaluated**, never clean.
+
 This is dependency vulnerability scanning. Never describe it as antivirus, malware detection, source-code security analysis, reachability analysis, or proof that an application is secure.
 
 ## Trust boundary
@@ -68,6 +70,18 @@ Report package-admission states precisely:
 - `BLOCK`: a hard policy boundary failed.
 
 Never relabel `publisher provenance: unknown` as trusted.
+
+### 2a. Agent configuration audit (optional)
+
+When an agent harness is present and ACVE is available, run:
+
+```text
+npx @pickbitsai/acve locate
+npx @pickbitsai/acve lock --apply
+npx @pickbitsai/acve audit --format osv-scanner --out reports/acve.json --apply
+```
+
+Pass `--acve reports/acve.json` to both `scripts/trust-audit.mjs` and `scripts/generate-report.mjs`. ACVE is an optional CLI-output contract, not an npm or file dependency. If it is absent or not supplied, agent configuration is **not evaluated**, never clean. Advisory prose is display-only. No shell command is ever generated for a configuration change; the report offers a typed remediation prompt with `approval: required`.
 
 ### 3. Apply an optional CyberHawk watchlist
 

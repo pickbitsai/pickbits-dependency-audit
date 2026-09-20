@@ -140,6 +140,26 @@ function countBy(items, selector) {
   return counts;
 }
 
+function loadAcve(acvePath) {
+  if (!acvePath) return null;
+  let acve;
+  try {
+    acve = JSON.parse(fs.readFileSync(acvePath, "utf8"));
+  } catch (error) {
+    console.error(`Invalid ACVE output at ${acvePath}: ${error.message}`);
+    process.exit(2);
+  }
+  if (!Array.isArray(acve?.results)) {
+    console.error(`Invalid ACVE output at ${acvePath}: expected a results[] array`);
+    process.exit(2);
+  }
+  return acve;
+}
+
+function findingsIn(results) {
+  return (results || []).reduce((total, result) => total + (result.packages || []).reduce((count, group) => count + (group.vulnerabilities || []).length, 0), 0);
+}
+
 const args = parseArgs(process.argv.slice(2));
 for (const required of ["scan", "target", "db", "output"]) {
   if (!args[required]) {
@@ -153,8 +173,12 @@ const target = path.resolve(args.target);
 const outputPath = path.resolve(args.output);
 const policyPath = path.resolve(args.policy || "dependency-audit-policy.json");
 const complete = args.complete !== "false";
+const acvePath = args.acve ? path.resolve(args.acve) : null;
+const acve = loadAcve(acvePath);
 const scan = JSON.parse(fs.readFileSync(scanPath, "utf8"));
 const policy = JSON.parse(fs.readFileSync(policyPath, "utf8"));
+if (acve) scan.results = [...(scan.results || []), ...acve.results];
+const acveFindingCount = acve ? findingsIn(acve.results) : 0;
 const inventory = inventoryFromScan(scan, target, policy);
 const lockAudit = assessLockfiles(target, inventory.coordinates, policy);
 const now = new Date().toISOString();
@@ -170,7 +194,7 @@ try {
     .run(runKey, target, now, now, complete ? 1 : 0, inventory.sourceFiles.size, inventory.packageOccurrences, inventory.detections.length);
   runId = Number(inserted.lastInsertRowid);
 
-  const existingRows = db.prepare("SELECT detection_key, status, missing_scans FROM detections WHERE target = ?").all(target);
+  const existingRows = db.prepare("SELECT detection_key, source, status, missing_scans FROM detections WHERE target = ?").all(target);
   const currentKeys = new Set(inventory.detections.map((item) => item.detectionKey));
   const upsert = db.prepare(`INSERT INTO detections
     (detection_key, target, project, source, ecosystem, package, version, advisory, cve, severity, first_seen, last_seen, status, missing_scans)
@@ -187,6 +211,7 @@ try {
     const markMissing = db.prepare("UPDATE detections SET missing_scans = ?, status = ? WHERE detection_key = ?");
     for (const existing of existingRows) {
       if (currentKeys.has(existing.detection_key) || existing.status === "closed_fixed") continue;
+      if (!acve && /acve\.lock\.json$/i.test(existing.source)) continue;
       const missingScans = Number(existing.missing_scans) + 1;
       const status = missingScans >= Number(policy.closeAfterSuccessfulScans || 2) ? "closed_fixed" : "pending_verification";
       markMissing.run(missingScans, status, existing.detection_key);
@@ -218,6 +243,11 @@ try {
       packageOccurrences: inventory.packageOccurrences,
       findings: inventory.detections.length,
       detectionStates: statusCounts,
+      acve: {
+        supplied: Boolean(acve),
+        path: acvePath,
+        findings: acveFindingCount,
+      },
     },
     trust: {
       npmLockfiles: findPackageLocks(target).length,
@@ -234,6 +264,7 @@ try {
   db.prepare("UPDATE scan_runs SET open_findings=?, pending_findings=?, closed_findings=?, trust_json=?, result_json=? WHERE id=?")
     .run(statusCounts.open || 0, statusCounts.pending_verification || 0, statusCounts.closed_fixed || 0, JSON.stringify(trustCounts), JSON.stringify(result), runId);
   recordAudit(db, "scan_imported", inventory.injectionEvents.length ? "HIGH" : "INFO", target, { runId, findings: inventory.detections.length, complete });
+  if (acve) recordAudit(db, "acve_imported", "INFO", target, { runId, path: acvePath, findings: acveFindingCount });
   db.exec("COMMIT");
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   fs.writeFileSync(outputPath, `${JSON.stringify(result, null, 2)}\n`, "utf8");

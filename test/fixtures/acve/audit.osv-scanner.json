@@ -1,0 +1,391 @@
+{
+  "results": [
+    {
+      "source": {
+        "path": "C:\\new\\ACVE\\test\\fixtures\\locks\\ACVE-2025-0002.vulnerable.json",
+        "type": "lockfile"
+      },
+      "packages": [
+        {
+          "package": {
+            "ecosystem": "npm",
+            "name": "mcp-remote",
+            "version": "0.1.10"
+          },
+          "vulnerabilities": [
+            {
+              "schema_version": "1.6.0",
+              "id": "ACVE-2025-0002",
+              "aliases": [
+                "CVE-2025-6514"
+              ],
+              "published": "2026-09-19T00:00:00Z",
+              "modified": "2026-09-19T00:00:00Z",
+              "summary": "mcp-remote can inject operating-system commands through an untrusted URL",
+              "details": "## What the vulnerability is\n\n`mcp-remote` is a proxy that lets a local MCP client connect to a remote MCP server. In versions `0.0.5` through before `0.1.16`, an MCP server can return a crafted OAuth authorization URL that reaches operating-system command construction. The consequence is command execution with the privileges of the client process.\n\n## Which configuration is exposed\n\nThe exposed combination is an MCP server launched as the PURL `pkg:npm/mcp-remote` with a resolved version in `>=0.0.5 <0.1.16`, typically with a remote URL supplied as an argument. The matcher encodes both the package identity and that resolved-version range. It does not require a particular harness or transport because the vulnerable proxy can be embedded in different MCP client configurations.\n\n## How ACVE detects it\n\nACVE reads `mcpServers[].package` and `mcpServers[].resolvedVersion`. A server launched through `npx` can have an unknown resolved version, so the finding is reported as *possible* when the package identity is present but resolution is unavailable. ACVE also cannot determine whether the remote endpoint is trusted or whether an OAuth flow has occurred; the lockfile signal is a package-and-version exposure check, not exploit confirmation.\n\n## Fix\n\n1. Upgrade `mcp-remote` to `0.1.16` or later and refresh the lockfile so the resolved version is recorded.\n2. Remove or replace configurations that connect the proxy to an untrusted MCP URL until the upgrade is in place.\n\n## References\n\nSee `references` for primary sources.",
+              "affected": [
+                {
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "mcp-remote"
+                  },
+                  "ranges": [
+                    {
+                      "type": "SEMVER",
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "0.1.16"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "package": {
+                    "ecosystem": "MCP",
+                    "name": "pkg:npm/mcp-remote"
+                  },
+                  "ranges": [
+                    {
+                      "type": "SEMVER",
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "0.1.16"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "references": [
+                {
+                  "type": "ADVISORY",
+                  "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-6514"
+                },
+                {
+                  "type": "REPORT",
+                  "url": "https://example.com/research/acve"
+                },
+                {
+                  "type": "FIX",
+                  "url": "https://github.com/pickbitsai/acve/issues?q=CVE-2025-6514"
+                }
+              ],
+              "severity": [
+                {
+                  "type": "CVSS_V3",
+                  "score": "9.5"
+                }
+              ],
+              "database_specific": {
+                "severity": "CRITICAL",
+                "acve": {
+                  "specVersion": 1,
+                  "status": "candidate",
+                  "vulnClasses": [
+                    "command-injection"
+                  ],
+                  "cwe": [
+                    "CWE-78"
+                  ],
+                  "taxonomy": {
+                    "owasp_asi": [
+                      "ASI02 Tool Misuse"
+                    ],
+                    "atlas": [
+                      "AML.T0051"
+                    ]
+                  },
+                  "matcher": {
+                    "some": "mcpServers",
+                    "where": {
+                      "all": [
+                        {
+                          "field": "package",
+                          "op": "eq",
+                          "value": "pkg:npm/mcp-remote"
+                        },
+                        {
+                          "field": "resolvedVersion",
+                          "op": "semverRange",
+                          "value": ">=0.0.5 <0.1.16"
+                        }
+                      ]
+                    }
+                  },
+                  "fix": {
+                    "summary": "Upgrade mcp-remote to 0.1.16 or later and remove untrusted remote URLs.",
+                    "actions": [
+                      {
+                        "type": "upgrade",
+                        "target": "mcp:pkg:npm/mcp-remote",
+                        "to": "0.1.16",
+                        "why": "Use the fixed release."
+                      }
+                    ]
+                  },
+                  "exposure": "local",
+                  "exploitation": {
+                    "vector": "malicious project or server configuration",
+                    "userInteraction": "required",
+                    "kev": false
+                  }
+                }
+              }
+            }
+          ],
+          "groups": [
+            {
+              "ids": [
+                "ACVE-2025-0002"
+              ],
+              "aliases": [
+                "CVE-2025-6514"
+              ],
+              "max_severity": "CRITICAL"
+            }
+          ]
+        },
+        {
+          "package": {
+            "ecosystem": "AgentHarness",
+            "name": "claude-code",
+            "version": "2.1.278"
+          },
+          "vulnerabilities": [
+            {
+              "schema_version": "1.6.0",
+              "id": "ACVE-2026-0002",
+              "aliases": [
+                "GHSA-ff64-7w26-62rf"
+              ],
+              "published": "2026-09-19T00:00:00Z",
+              "modified": "2026-09-19T00:00:00Z",
+              "summary": "Claude Code sandbox settings can permit a sandbox escape",
+              "details": "## What the vulnerability is\n\nClaude Code sandbox settings can permit the sandbox-escape condition described by the referenced GHSA. The relevant boundary is the sandbox state at process startup: a later-created settings file is not equivalent to a file that was already present when the harness began. The current seed does not establish a fixed Claude Code release.\n\n## Which configuration is exposed\n\nThe matcher requires `harness.id` `claude-code`, a version below the sentinel `<999.0.0`, and a present `sandbox` field. It is deliberately broad because the lockfile records the effective sandbox setting but not the complete startup history. The finding text must therefore be read as requiring confirmation that the relevant `settings.json` startup-state condition occurred.\n\n## How ACVE detects it\n\nACVE reads `harness.id`, `harness.version`, and the existence of `sandbox`. ACVE cannot see whether `settings.json` existed at start, whether the sandbox value was enabled or restrictive, what command escaped, or whether an escape was reproduced. The finding is a possible configuration match, not proof of the startup-state prerequisite.\n\n## Fix\n\n1. Verify that the sandbox settings file is present and correct before starting Claude Code.\n2. Use the most restrictive supported sandbox configuration and do not treat a post-start settings change as evidence that startup was safe.\n3. Run grounding before selecting an upgrade target, then upgrade to the confirmed fixed release.\n\n## Grounding needed\n\n`acve advisory ground` must confirm the affected Claude Code range, fixed release, and the startup-state condition required by `GHSA-ff64-7w26-62rf`.\n\n## References\n\nSee `references` for primary sources.",
+              "affected": [
+                {
+                  "package": {
+                    "ecosystem": "AgentHarness",
+                    "name": "claude-code"
+                  },
+                  "ranges": [
+                    {
+                      "type": "SEMVER",
+                      "events": [
+                        {
+                          "introduced": "0"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "references": [
+                {
+                  "type": "ADVISORY",
+                  "url": "https://github.com/advisories/GHSA-ff64-7w26-62rf"
+                },
+                {
+                  "type": "REPORT",
+                  "url": "https://example.com/research/acve"
+                },
+                {
+                  "type": "FIX",
+                  "url": "https://github.com/pickbitsai/acve/issues?q=GHSA-ff64-7w26-62rf"
+                }
+              ],
+              "severity": [
+                {
+                  "type": "CVSS_V3",
+                  "score": "8"
+                }
+              ],
+              "database_specific": {
+                "severity": "HIGH",
+                "acve": {
+                  "specVersion": 1,
+                  "status": "candidate",
+                  "vulnClasses": [
+                    "sandbox-escape"
+                  ],
+                  "cwe": [
+                    "CWE-693"
+                  ],
+                  "taxonomy": {
+                    "owasp_asi": [
+                      "ASI04 Agent Identity and Privilege Abuse"
+                    ],
+                    "atlas": [
+                      "AML.T0051"
+                    ]
+                  },
+                  "matcher": {
+                    "all": [
+                      {
+                        "field": "harness.id",
+                        "op": "eq",
+                        "value": "claude-code"
+                      },
+                      {
+                        "field": "harness.version",
+                        "op": "semverRange",
+                        "value": "<999.0.0"
+                      },
+                      {
+                        "field": "sandbox",
+                        "op": "exists"
+                      }
+                    ]
+                  },
+                  "fix": {
+                    "summary": "Verify sandbox settings before startup and upgrade to the confirmed fixed release.",
+                    "actions": [
+                      {
+                        "type": "reconfigure",
+                        "target": "settings:claude-code:sandbox",
+                        "to": "verified-before-start",
+                        "why": "Confirm settings are present before starting the harness."
+                      }
+                    ]
+                  },
+                  "exposure": "local",
+                  "exploitation": {
+                    "vector": "malicious project or server configuration",
+                    "userInteraction": "required",
+                    "kev": false
+                  }
+                }
+              }
+            },
+            {
+              "schema_version": "1.6.0",
+              "id": "ACVE-2026-0004",
+              "aliases": [
+                "GHSA-4q92-rfm6-2cqx"
+              ],
+              "published": "2026-09-19T00:00:00Z",
+              "modified": "2026-09-19T00:00:00Z",
+              "summary": "Claude Code deny rules can be bypassed through symlinked tools",
+              "details": "## What the vulnerability is\n\nClaude Code deny rules can be bypassed when a tool is reached through a symlinked path and the harness does not compare the canonical target as intended. The current reference set does not establish the complete bypass mechanics or a fixed release, so this record remains a configuration review signal.\n\n## Which configuration is exposed\n\nThe matcher requires `harness.id` `claude-code`, a version below `<999.0.0>`, and the presence of the `deniedTools` field. It does not test whether the list is non-empty, which tool is denied, whether a symlink exists, or whether the path resolves outside the expected location. The finding therefore covers any lockfile that records deny rules and needs a path-level review.\n\n## How ACVE detects it\n\nACVE reads `harness.id`, `harness.version`, and the existence of `deniedTools`. It cannot inspect canonical paths, symlink targets, tool aliases, the deny-list contents, or an attempted bypass. The broad version condition is deliberately retained until the advisory is grounded.\n\n## Fix\n\n1. Review `deniedTools` and prefer an explicit allowlist for sensitive tools.\n2. Verify that every tool path is canonicalized before the deny decision and remove symlinked paths that are not required.\n3. Run grounding and upgrade to the confirmed fixed release when one is established.\n\n## Grounding needed\n\n`acve advisory ground` must confirm the affected Claude Code range, fixed release, and the exact symlink bypass behavior for `GHSA-4q92-rfm6-2cqx`.\n\n## References\n\nSee `references` for primary sources.",
+              "affected": [
+                {
+                  "package": {
+                    "ecosystem": "AgentHarness",
+                    "name": "claude-code"
+                  },
+                  "ranges": [
+                    {
+                      "type": "SEMVER",
+                      "events": [
+                        {
+                          "introduced": "0"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "references": [
+                {
+                  "type": "ADVISORY",
+                  "url": "https://github.com/advisories/GHSA-4q92-rfm6-2cqx"
+                },
+                {
+                  "type": "REPORT",
+                  "url": "https://example.com/research/acve"
+                },
+                {
+                  "type": "FIX",
+                  "url": "https://github.com/pickbitsai/acve/issues?q=GHSA-4q92-rfm6-2cqx"
+                }
+              ],
+              "severity": [
+                {
+                  "type": "CVSS_V3",
+                  "score": "5"
+                }
+              ],
+              "database_specific": {
+                "severity": "MODERATE",
+                "acve": {
+                  "specVersion": 1,
+                  "status": "candidate",
+                  "vulnClasses": [
+                    "auth-bypass"
+                  ],
+                  "cwe": [
+                    "CWE-59"
+                  ],
+                  "taxonomy": {
+                    "owasp_asi": [
+                      "ASI03 Identity and Privilege Abuse"
+                    ],
+                    "atlas": [
+                      "AML.T0051"
+                    ]
+                  },
+                  "matcher": {
+                    "all": [
+                      {
+                        "field": "harness.id",
+                        "op": "eq",
+                        "value": "claude-code"
+                      },
+                      {
+                        "field": "harness.version",
+                        "op": "semverRange",
+                        "value": "<999.0.0"
+                      },
+                      {
+                        "field": "deniedTools",
+                        "op": "exists"
+                      }
+                    ]
+                  },
+                  "fix": {
+                    "summary": "Review deny rules and canonicalize tool paths before relying on them.",
+                    "actions": [
+                      {
+                        "type": "reconfigure",
+                        "target": "settings:claude-code:deniedTools",
+                        "to": "reviewed-allowlist",
+                        "why": "Use allowlists and verify canonical paths."
+                      }
+                    ]
+                  },
+                  "exposure": "local",
+                  "exploitation": {
+                    "vector": "malicious project or server configuration",
+                    "userInteraction": "required",
+                    "kev": false
+                  }
+                }
+              }
+            }
+          ],
+          "groups": [
+            {
+              "ids": [
+                "ACVE-2026-0002",
+                "ACVE-2026-0004"
+              ],
+              "aliases": [
+                "GHSA-ff64-7w26-62rf",
+                "GHSA-4q92-rfm6-2cqx"
+              ],
+              "max_severity": "HIGH"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

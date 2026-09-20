@@ -12,10 +12,12 @@ This is dependency vulnerability scanning, not antivirus, malware detection, rea
 
 - Discovers supported dependency manifests and lockfiles without installing packages.
 - Runs OSV-Scanner against one project or a local folder containing many projects.
+- Optionally imports ACVE's OSV-Scanner-shaped agent-configuration findings.
 - Persists runs, findings, and observations in a local SQLite database.
 - Requires two complete scans without a finding before marking it closed.
 - Classifies npm lockfile records as `ALLOW_LOCKED`, `REVIEW`, `QUARANTINE`, or `BLOCK`.
 - Generates a filterable, standalone HTML report and constrained remediation requests.
+- Labels agent-config findings separately and never generates a shell command for configuration changes.
 - Records harmless defensive-canary hits for unexpected autonomous handling.
 - Keeps every patch behind an explicit human approval boundary.
 
@@ -23,7 +25,7 @@ This is dependency vulnerability scanning, not antivirus, malware detection, rea
 
 ## Status
 
-The report, SQLite evidence store, npm admission audit, release verifier, defensive-canary prototype, and optional Claude Code adapter work today. A signed standalone binary, sandboxed patch executor, Windows quick-launch installer, and team fleet collector remain planned work.
+The report, SQLite evidence store, npm admission audit, optional ACVE agent-configuration import, release verifier, defensive-canary prototype, and optional Claude Code adapter work today. A signed standalone binary, sandboxed patch executor, Windows quick-launch installer, and team fleet collector remain planned work.
 
 ## Install the core workflow
 
@@ -48,6 +50,25 @@ osv-scanner scan source -r --all-packages --format=json --output=reports\osv-res
 ```
 
 OSV-Scanner uses exit code `1` when vulnerabilities are found. That is a completed scan result, not a scanner failure.
+
+### 2a. Agent configuration audit (optional)
+
+If the project uses an agent harness, ACVE can produce an optional OSV-Scanner-shaped configuration audit. ACVE is a CLI-output contract, not an npm or file dependency of this repository:
+
+```powershell
+npx @pickbitsai/acve locate
+npx @pickbitsai/acve lock --apply
+npx @pickbitsai/acve audit --format osv-scanner --out reports/acve.json --apply
+```
+
+Pass the resulting file to both audit scripts:
+
+```powershell
+node scripts\trust-audit.mjs --scan reports\osv-result.json --acve reports\acve.json --target C:\path\to\project --db reports\dependency-audit-state.db --output reports\dependency-audit-run.json
+node scripts\generate-report.mjs --scan reports\osv-result.json --acve reports\acve.json --target C:\path\to\project --output reports\dependency-audit-report.html
+```
+
+If ACVE is absent or not supplied, agent configuration coverage is **not evaluated**, never clean. Advisory prose is display-only, and no shell command is generated for a configuration change; the report provides a typed remediation prompt requiring approval.
 
 Import the scan, evaluate npm lockfiles, and persist the evidence:
 

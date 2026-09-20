@@ -113,9 +113,9 @@ export function canonicalRemediationRequest(finding) {
   }
   const manifest = String(finding.manifest || "").replaceAll("\\", "/");
   const safeManifest = !manifest.includes("..") && !/[\u0000-\u001f]/.test(manifest) ? manifest : null;
-  return {
+  const request = {
     schemaVersion: 1,
-    operation: finding.fixed ? "update_dependency" : "investigate_dependency",
+    operation: finding.acve ? "investigate_dependency" : (finding.fixed ? "update_dependency" : "investigate_dependency"),
     findingId: finding.id,
     ecosystem,
     package: finding.package,
@@ -125,6 +125,8 @@ export function canonicalRemediationRequest(finding) {
     manifest: safeManifest,
     approval: "required",
   };
+  if (finding.note) request.note = String(finding.note).replace(/\s+/g, " ").slice(0, 500);
+  return request;
 }
 
 export function relativeProject(target, source) {
