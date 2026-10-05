@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// release-guard v1.0.0
+// release-guard v1.0.1
 // Vendored from pickbitsai/release-guard. Copy this file alone into scripts/.
 import fs from 'node:fs';
 import os from 'node:os';
@@ -381,4 +381,7 @@ export function main(argv = process.argv.slice(2)) {
   }
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) process.exitCode = main();
+// Real paths on both sides: when launched through a junction or symlink (C:/new/Weaver points into
+// pickbits-services), argv[1] is the link path but import.meta.url is already resolved, and a plain
+// compare silently skips main() and exits 0.
+if (process.argv[1] && fs.realpathSync(path.resolve(process.argv[1])) === fs.realpathSync(fileURLToPath(import.meta.url))) process.exitCode = main();
