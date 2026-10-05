@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
+import { realpathSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 
 const MAX_BYTES = 1024 * 1024;
 
@@ -74,7 +75,16 @@ export async function run(argv = process.argv.slice(2)) {
   return { output, count: cves.length };
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+function isMain() {
+  if (!process.argv[1]) return false;
+  try {
+    return realpathSync(resolve(process.argv[1])) === realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+}
+
+if (isMain()) {
   run().catch((error) => {
     process.stderr.write(`CyberHawk watchlist import failed: ${error.message}\n`);
     process.exitCode = 1;
